@@ -1,43 +1,152 @@
 # Gemini Companion Starter
 
-[中文版 (Chinese)](./README.zh-CN.md)
+[中文说明](./README.zh-CN.md)
 
-A specialized "Bootstrap Prompt" designed for Gemini CLI. It transforms your command-line AI from a one-shot Q&A tool into a dedicated personal assistant with persistent memory, structured local context, and custom workflows.
+Turn Gemini CLI into a more consistent, workspace-aware, long-term personal assistant.
 
-## Why this project exists
+A single prompt starter for people who want Gemini CLI to do more than answer one-off questions. It helps Gemini establish a lightweight external memory layer in the file system, so collaboration can stay stable across sessions.
 
-Many extensive "AI Assistant prompts" encounter problems in a CLI environment because they:
-- Over-rely on conversational history which is lost upon session restart.
-- Read too many files on every turn, causing huge latency and token waste.
-- Struggle with state tracking or suffer from "hallucinated" console-only edits rather than actual file operations.
+## Why This Exists
 
-**Gemini Companion Starter** solves this by establishing an explicit "external memory layer" right inside your file system. It treats daily logs, project context, and your specific communication style as tangible file assets in your workspace. This approach enables true long-term collaboration continuity, drawing inspiration from advanced agent memory architectures.
+Many "personal assistant" prompts look impressive in theory but behave poorly in real CLI environments. Common issues include:
 
-### What it changes
+- over-relying on chat history that disappears between sessions
+- reading too many files on every turn
+- blurring the line between suggested content and actual file operations
+- mixing long-term rules with temporary task notes
 
-- Your preferences and rules are no longer scattered across chat logs.
-- Temporary contexts (daily logs) and long-term project decisions are managed separately.
-- The CLI tool greets your project with full awareness of your previous sessions and guidelines.
+This project is designed around those realities.
 
-### Concrete Examples
+Instead of pretending the model will just remember everything, it pushes Gemini CLI to use the local file system as a durable collaboration surface.
 
-1. **Persistent Style:** Tell it once to "be concise, state conclusions first" and it's saved in `.assistant/STYLE.md`.
-2. **Architectural Decisions:** Document why "we chose SQLite over Postgres for now" in `.assistant/memory/projects/db.md` to avoid rehashing the topic tomorrow.
-3. **Daily Scratchpad:** Keep unstructured thoughts and unfinished tasks in `.assistant/memory/daily/YYYY-MM-DD.md` without polluting global AI rules.
+## Why OpenClaw-Inspired Memory For Gemini CLI
 
-## Core Engineering Highlights
+Gemini CLI is good at following instructions and working with local files, but it does not automatically become a long-term collaborative system just because you give it a long prompt.
 
-1. **Lazy Loading:** Prevents token waste by loading only the essential rules (`SYSTEM.md`, `runtime/inbox.md`) by default. Deeper project documents are read purely on an as-needed basis.
-2. **Entity-Based State Tracking:** Eliminates fragility by checking the actual content of essential files rather than relying on an external, easily-desynced status flag.
-3. **Safe Execution:** Strictly requires the LLM to use actual file-system tool calls to create configurations, suppressing "hallucinated" console code blocks.
-4. **Explicit Archiving Triggers:** Prevents accidental memory overwriting. The assistant requires explicit commands (e.g., `"/done"`) to update daily logs and session summaries.
+OpenClaw-style memory systems are useful because they treat files as durable memory artifacts instead of leaving everything in chat history. That idea maps well to CLI assistants:
 
-## Getting Started
+- stable preferences belong in structured files
+- project decisions should survive across sessions
+- temporary notes should stay separate from long-term memory
 
-1. Ensure you have a working installation of Gemini CLI (or an equivalent agentic CLI tool capable of file operations).
-2. Navigate to your desired project directory: `cd /path/to/your/project`
-3. Start your CLI tool session.
-4. Copy the entire text content of [Gemini-Companion-Starter.md](./Gemini-Companion-Starter.md).
-5. Paste it as a single prompt into the CLI.
-6. Answer the 1-3 bootstrap questions the assistant asks you to set up your profiles.
-7. Enjoy your new personalized CLI assistant!
+This repository applies that philosophy to Gemini CLI by using `.assistant/` as a project-local memory layout and `~/.gemini/GEMINI.md` as a global default behavior layer.
+
+The result is not "turning Gemini into OpenClaw". The result is giving Gemini CLI a more structured memory surface so it can feel less stateless and more like a repeatable collaborator.
+
+## What This Changes
+
+- preferences and collaboration habits stop living only in chat history
+- project context becomes inspectable and editable
+- temporary context and durable memory are stored separately
+- Gemini can re-enter a workspace with better continuity
+
+## Concrete Examples
+
+1. Style becomes stable across sessions.  
+   Preferences such as "be concise, state conclusions first, then risks" can live in `.assistant/STYLE.md`.
+
+2. Project decisions stop resetting.  
+   If a project already decided to postpone a large refactor, that can live in `.assistant/memory/projects/architecture.md` instead of being re-debated from scratch.
+
+3. Daily scratch notes stop polluting long-term rules.  
+   Unverified notes or one-day context can live in `.assistant/memory/daily/YYYY-MM-DD.md`.
+
+4. Workflow becomes personalized.  
+   If you prefer "inspect first, edit second, summarize verification at the end", that can live in `.assistant/WORKFLOW.md`.
+
+## Core Ideas
+
+- File-backed memory instead of chat-only memory
+- Lazy loading instead of reading every file on every turn
+- Incremental edits instead of destructive rewrites
+- Explicit file operations instead of hallucinated "pretend writes"
+- Lightweight bootstrap instead of long onboarding forms
+
+## What's Included
+
+- [Gemini-Companion-Starter.md](./Gemini-Companion-Starter.md)  
+  The main bootstrap prompt for Gemini CLI.
+
+- [README.zh-CN.md](./README.zh-CN.md)  
+  Chinese documentation.
+
+## Quick Start
+
+1. Open [Gemini-Companion-Starter.md](./Gemini-Companion-Starter.md).
+2. Copy the full `text` code block.
+3. Start Gemini CLI in your target workspace.
+4. Send the prompt in one message.
+5. Let Gemini inspect the workspace, update config, and start lightweight bootstrap if needed.
+
+## How This Prompt Is Positioned
+
+This repository currently provides one main prompt, not multiple variants.
+
+It is best understood as a balanced working version:
+
+- proactive enough to create files and initialize structure
+- cautious enough to avoid unnecessary overwrites
+- opinionated about memory structure and lazy loading
+
+## Design Principles
+
+- Global defaults should guide behavior, not claim permanent hard control
+- Project-local memory should carry evolving context
+- Temporary notes should not pollute long-term memory
+- Small, durable files are better than giant prompt blobs
+- Real CLI behavior matters more than idealized agent theory
+
+## Important Boundaries
+
+- `~/.gemini/GEMINI.md` should be treated as a default behavior layer, not a guaranteed permanent control layer.
+- `.assistant/` is a project-local memory convention, not a native Gemini CLI protocol.
+- Actual behavior still depends on runtime context, available tools, and the model's execution behavior.
+
+## FAQ
+
+### Why not just use a single giant prompt every time?
+
+Because a giant prompt does not scale well across sessions.
+
+As soon as work becomes ongoing, you need stable structure for:
+
+- user preferences
+- project decisions
+- temporary notes
+- unfinished tasks
+
+Keeping that in files is more durable than repeating it in chat.
+
+### Why not keep everything inside `GEMINI.md`?
+
+Because global rules and project memory are different things.
+
+`GEMINI.md` is better for defaults and stable behavior. Project-level files are better for local context that changes over time.
+
+### Doesn't `.assistant/` add too much overhead?
+
+It can, if overbuilt.
+
+This project tries to keep the structure small and practical. The goal is not process for its own sake. The goal is reducing repeated friction.
+
+### Is this trying to replace Gemini CLI?
+
+No.
+
+It is a prompt-layer workflow enhancement. Gemini CLI still does the actual work. This repository simply gives it a more durable collaboration structure.
+
+## Who This Is For
+
+This project is useful if you want Gemini CLI to behave more like:
+
+- a repeatable project assistant
+- a workspace-aware collaborator
+- a tool that can preserve lightweight context across sessions
+
+It is less useful if you only want fast one-off prompts with no local memory structure.
+
+## Notes
+
+If Gemini becomes too aggressive in your environment, tighten the prompt or trim the initialization scope.
+
+If it is too passive, strengthen the execution instructions around file creation, validation, and bootstrap follow-through.
