@@ -2,6 +2,9 @@
 
 [中文说明](./README.zh-CN.md)
 
+> **Looking for other CLI assistants?** 
+> Check out the sister extensions: [Claude Code Companion Starter](https://github.com/d-wwei/claude-code-companion-starter) & [Codex Companion Starter](https://github.com/d-wwei/Codex-companion-starter)
+
 Turn Gemini CLI into a more consistent, workspace-aware, long-term personal assistant.
 
 A single prompt starter for people who want Gemini CLI to do more than answer one-off questions. It helps Gemini establish a lightweight external memory layer in the file system, so collaboration can stay stable across sessions.
@@ -18,6 +21,16 @@ Many "personal assistant" prompts look impressive in theory but behave poorly in
 This project is designed around those realities.
 
 Instead of pretending the model will just remember everything, it pushes Gemini CLI to use the local file system as a durable collaboration surface.
+
+## Key Features
+
+This prompt transforms Gemini CLI from a powerful but amnesic one-shot tool into a long-term collaborator that builds rapport with you.
+
+- **Long-term Memory Setup:** Automatically establishes persistent global rules (`~/.gemini/`) and project-specific memory (`.assistant/`).
+- **Preference Accumulation:** Remembers how you like things done—your role, coding style, workflow, and recurring instructions.
+- **Global Memory Promotion:** As it discovers your habits and reusable knowledge during active projects, it can automatically promote them to your global profile.
+- **Project-Specific Customization:** Every project can have its own tailored rules and context that override the global defaults.
+- **Continuous Collaboration:** You never have to explain your background, structure, or current progress from scratch again when re-entering a workspace.
 
 ## Why OpenClaw-Inspired Memory For Gemini CLI
 
