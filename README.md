@@ -77,7 +77,7 @@ The result is not "turning Gemini into OpenClaw". The result is giving Gemini CL
 
 ## What's Included
 
-- [Gemini-Companion-Starter.md](./Gemini-Companion-Starter.md)  
+- [SKILL.md](./SKILL.md)  
   The main bootstrap prompt for Gemini CLI.
 
 - [README.zh-CN.md](./README.zh-CN.md)  
@@ -85,7 +85,7 @@ The result is not "turning Gemini into OpenClaw". The result is giving Gemini CL
 
 ## Quick Start
 
-1. Open [Gemini-Companion-Starter.md](./Gemini-Companion-Starter.md).
+1. Open [SKILL.md](./SKILL.md).
 2. Copy the full `text` code block.
 3. Start Gemini CLI in your target workspace.
 4. Send the prompt in one message.

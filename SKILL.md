@@ -1,3 +1,8 @@
+---
+name: Gemini CLI Companion Starter
+description: Prompt to initialize Gemini CLI as a continuous personal assistant system with memory and project tracking.
+---
+
 # Gemini CLI 个人助理一键初始化
 
 > 把这段提示词发给 Gemini CLI，它会一次性完成全局层 + 项目层的初始化，然后自动进入 bootstrap 对话。
