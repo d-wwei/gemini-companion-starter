@@ -31,7 +31,7 @@ This prompt transforms Gemini CLI from a powerful but amnesic one-shot tool into
 - **Global Memory Promotion:** As it discovers your habits and reusable knowledge during active projects, it can automatically promote them to your global profile.
 - **Project-Specific Customization:** Every project can have its own tailored rules and context that override the global defaults.
 - **Continuous Collaboration:** You never have to explain your background, structure, or current progress from scratch again when re-entering a workspace.
-- **Task-Level Resume Checkpoints:** For multi-step implementation work, Gemini can maintain a module-local `PROGRESS.md` so a new process can resume from the last accepted step instead of reconstructing progress from chat.
+- **Task-Level Resume Checkpoints:** For multi-step work of many kinds, Gemini can maintain a module-local `PROGRESS.md` so a new process can resume from the last accepted step or milestone instead of reconstructing progress from chat.
 - **Layered Bootstrap Interview:** The startup interview now uses a compact 3-step script to capture naming, style, assistant role, ambiguity handling, work types, and memory boundaries without becoming a questionnaire.
 - **Global Quick Mode:** When started from `$HOME`, Gemini writes directly to `~/.gemini/GEMINI.md` and skips redundant "sync to global" prompts.
 - **Historical Project Scan:** First-time setup can scan prior `.assistant/` workspaces, extract project/session summaries, and register them into the global project index.
@@ -71,10 +71,45 @@ The result is not "turning Gemini into OpenClaw". The result is giving Gemini CL
 4. Workflow becomes personalized.  
    If you prefer "inspect first, edit second, summarize verification at the end", that can live in `.assistant/WORKFLOW.md`.
 
-5. Interrupted implementation can resume cleanly.  
-   A nearby `PROGRESS.md` can record which acceptance items are done, what is currently in progress, and what the next concrete step should be for the next Gemini process.
+5. Interrupted work can resume cleanly.  
+   A nearby `PROGRESS.md` can record which milestones or acceptance items are done, what is currently in progress, and what the next concrete step should be for the next Gemini process.
 
-The recommended `PROGRESS.md` shape is:
+Use the generic template by default for content, video, research, operations, design, or mixed project work:
+
+```md
+status: in_progress
+task: Produce launch video cut
+module_path: content/video-launch/
+project_type: video-editing
+
+# 任务进度
+
+## 已完成
+- [x] 确认视频目标、时长和发布渠道
+- [x] 整理可用素材与配音版本
+
+## 进行中
+- [ ] 精剪主版本时间线并对齐字幕
+
+## 待做
+- [ ] 输出 16:9 主版本
+- [ ] 裁切 9:16 短视频版本
+- [ ] 完成最终审校并导出交付文件
+
+## 关键决策
+- 主版本控制在 90 秒内，优先保留产品演示镜头
+- 字幕风格统一使用品牌模板，避免重新设计一套样式
+
+## 已知问题
+- 第三段配音底噪偏重，可能需要降噪或重录
+
+## 关键文件 / 素材
+- raw/interview-a-roll/
+- edits/launch-main.prproj
+- assets/subtitles/final-cn.srt
+```
+
+Keep the development-specific template for software implementation work:
 
 ```md
 status: in_progress
@@ -103,8 +138,7 @@ module_path: packages/assistant-memory/
 ## 已知问题
 - 当前模块还没有验证“多个候选进度文件”时的选择行为
 ```
-
-Update it every time an acceptance item is completed. For explicit recovery, the user can say `继续上次进度`, `恢复进度`, `resume progress`, or `continue from progress`.
+Use the generic template for milestone-based work. Use the development template when the task is driven by explicit acceptance items and code verification. For explicit recovery, the user can say `继续上次进度`, `恢复进度`, `resume progress`, or `continue from progress`.
 
 When recovering, the assistant should locate the most relevant `PROGRESS.md` in this order: current working directory, most recently modified module, user-named module, then best keyword-matching module. It should read only the top 1-2 candidates instead of scanning every progress file in the repo.
 
