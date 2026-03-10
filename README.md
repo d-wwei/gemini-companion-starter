@@ -1,9 +1,12 @@
-# Gemini Companion Starter
+# Gemini Recall
+
+> Have a mind like a steel trap.
+> 长期记忆，断点中继。
 
 [中文说明](./README.zh-CN.md)
 
 > **Looking for other CLI assistants?** 
-> Check out the sister extensions: [Claude Code Companion Starter](https://github.com/d-wwei/claude-code-companion-starter) & [Codex Companion Starter](https://github.com/d-wwei/Codex-companion-starter)
+> Check out the sister extensions: [Claude Recall](https://github.com/d-wwei/claude-recall) & [Codex Recall](https://github.com/d-wwei/codex-recall)
 
 Turn Gemini CLI into a more consistent, workspace-aware, long-term personal assistant deployment pack.
 

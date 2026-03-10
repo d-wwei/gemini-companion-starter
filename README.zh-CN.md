@@ -1,9 +1,12 @@
-# Gemini CLI 个人助理初始化系统
+# Gemini Recall
+
+> Have a mind like a steel trap.
+> 长期记忆，断点中继。
 
 [English](./README.md)
 
 > **正在寻找其他 CLI 助手的版本？**
-> 看看兄弟扩展项目：[Claude Code Companion Starter](https://github.com/d-wwei/claude-code-companion-starter) & [Codex Companion Starter](https://github.com/d-wwei/Codex-companion-starter)
+> 看看兄弟扩展项目：[Claude Recall](https://github.com/d-wwei/claude-recall) & [Codex Recall](https://github.com/d-wwei/codex-recall)
 
 把 Gemini CLI 调整成一个更稳定、更懂工作区上下文、适合长期协作的个人助理部署包。
 
