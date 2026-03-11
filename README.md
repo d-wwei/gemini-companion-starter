@@ -35,6 +35,7 @@ This prompt transforms Gemini CLI from a powerful but amnesic one-shot tool into
 - **Global Memory Promotion:** As it discovers your habits and reusable knowledge during active projects, it can automatically promote them to your global profile.
 - **Project-Specific Customization:** Every project can have its own tailored rules and context that override the global defaults.
 - **Fast Recall:** Helps Gemini quickly recall your background, working style, recent decisions, and unfinished context when you re-enter a workspace.
+- **Structured Quick Recall:** Uses `.assistant/runtime/active-task.md`, `interrupted-tasks.md`, and `resume-protocol.md` to recover the current main task first, then show the rest of the paused queue in a stable format.
 - **Task-Level Resume Checkpoints:** For multi-step work of many kinds, Gemini can maintain a module-local `PROGRESS.md` so a new process can resume from the last accepted step or milestone instead of reconstructing progress from chat.
 - **Layered Bootstrap Interview:** The startup interview now uses a compact 3-step script to capture naming, style, assistant role, ambiguity handling, work types, and memory boundaries without becoming a questionnaire.
 - **Global Quick Mode:** When started from `$HOME`, Gemini writes directly to `~/.gemini/GEMINI.md` and skips redundant "sync to global" prompts.
@@ -77,6 +78,41 @@ The result is not "turning Gemini into OpenClaw". The result is giving Gemini CL
 
 5. Interrupted work can resume cleanly.  
    A nearby `PROGRESS.md` can record which milestones or acceptance items are done, what is currently in progress, and what the next concrete step should be for the next Gemini process.
+
+## Fast Recall Protocol
+
+The latest recall flow separates workspace-level interruption routing from module-level `PROGRESS.md` checkpoints.
+
+- `.assistant/runtime/active-task.md` keeps the current highest-priority main task.
+- `.assistant/runtime/interrupted-tasks.md` keeps the rest of the paused queue in priority order.
+- `.assistant/runtime/resume-protocol.md` defines the hard rules for the first recovery reply.
+- `.assistant/runtime/resume-checkpoint-template.md` provides a reusable schema for named handoff checkpoints.
+
+When the user says things like `continue`, `resume`, `刚才做到哪里了`, or `恢复刚才的任务`, Gemini should first read `active-task.md`, then reply in three compact sections:
+
+```text
+A. 当前主任务
+task: ...
+progress: ...
+next step: ...
+
+---
+
+B. 其他中断任务
+task: ...
+priority: P2
+progress: ...
+next step: ...
+
+---
+
+C. 恢复选项
+1. 继续当前主任务
+2. 切换到 P2 ...
+3. 切换到 P3 ...
+```
+
+This makes recovery faster, keeps the first response readable, and lets the user switch directly into another paused task without a long explanation pass first.
 
 Use the generic template by default for content, video, research, operations, design, or mixed project work:
 

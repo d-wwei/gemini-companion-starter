@@ -82,7 +82,7 @@ Do NOT read all memory files on every turn.
 For each new session or task in a workspace:
 1. **Always read initially**: This file (`~/.gemini/GEMINI.md`), `.assistant/SYSTEM.md`, and `.assistant/runtime/inbox.md`.
 2. **Global Index reference**: Check the `<GLOBAL_PROJECTS_INDEX>` section at the end of this file for cross-project context if asked about past projects.
-3. **Interrupted task recovery**: If the task looks like ongoing work, read the nearest relevant module-local `PROGRESS.md` before broader project scans.
+3. **Interrupted task recovery**: If the task looks like ongoing work, read `.assistant/runtime/active-task.md` and `.assistant/runtime/resume-protocol.md` before broader project scans; use a module-local `PROGRESS.md` only when deeper task detail is needed.
 4. **Contextual loading**: Read other files (e.g., `USER.md`, `STYLE.md`, `WORKFLOW.md`, `memory/projects/*.md`) ONLY when the task requires specific context, preferences, or project history.
 
 ### Inheritance model & Merging Strategy
@@ -209,6 +209,10 @@ passwords, secrets, API keys, tokens, ID numbers, bank info, private health info
 - **module-local `PROGRESS.md`**: task-level checkpoint for resumable work inside the active module directory
 - **runtime/inbox.md**: follow-ups, reminders, pending confirmations, short action items
 - **runtime/last-session.md**: last session summary, blockers, recommended next step
+- **runtime/active-task.md**: the single highest-priority live task for fast re-entry
+- **runtime/interrupted-tasks.md**: the paused task queue in priority order
+- **runtime/resume-protocol.md**: hard rules for the first recovery reply
+- **runtime/resume-checkpoint-template.md**: template for named resume checkpoints or handoff notes
 
 ### Session summary write timing (Trigger Commands)
 ONLY update `.assistant/runtime/last-session.md` and archive daily context when the user explicitly inputs a trigger command like `"/done"`, `"总结会话"`, `"结束"`, or `"归档"`. Do NOT auto-update memory on every conversational turn.
@@ -312,6 +316,27 @@ ONLY update `.assistant/runtime/last-session.md` and archive daily context when 
   要我按这份进度继续吗？
   ```
 
+### Workspace-level quick recall protocol
+- In addition to module-local `PROGRESS.md`, maintain `.assistant/runtime/active-task.md`, `.assistant/runtime/interrupted-tasks.md`, and `.assistant/runtime/resume-protocol.md` for workspace-level interruption routing.
+- When the user says things like `continue`, `resume`, `刚才做到哪里了`, or `恢复刚才的任务`, read `active-task.md` first and avoid deep checkpoint scans before the first reply.
+- Prefer the user's default language for the first recovery reply unless they explicitly switch.
+- The first recovery reply should use exactly three sections in this order:
+  - `A. 当前主任务`
+  - `B. 其他中断任务`
+  - `C. 恢复选项`
+- Insert `---` between sections.
+- Section A should contain exactly:
+  - `task: ...`
+  - `progress: ...`
+  - `next step: ...`
+- Section B should list all other interrupted tasks in priority order, and each task should contain:
+  - `task: ...`
+  - `priority: P2`
+  - `progress: ...`
+  - `next step: ...`
+- Section C should provide numbered choices in the active reply language so the user can continue the main task or switch directly to another paused task.
+- Keep the first recovery reply compact and do not put background explanation before section A.
+
 - If there is a blocker, switch `进行中` to `当前卡点`.
 - If there are multiple candidates, summarize each in one line and ask which one to continue.
 
@@ -405,6 +430,10 @@ Standard workspace structure:
   runtime/
     inbox.md       — short-lived action items
     last-session.md — last session summary
+    active-task.md — current main task for fast recovery
+    interrupted-tasks.md — paused task queue in priority order
+    resume-protocol.md — hard rules for the first recovery reply
+    resume-checkpoint-template.md — schema for named handoff checkpoints
 
 Outside `.assistant/`, create a local `PROGRESS.md` inside the active module directory whenever ongoing work is multi-step and likely to need interruption-safe recovery.
 
@@ -437,7 +466,8 @@ Outside `.assistant/`, create a local `PROGRESS.md` inside the active module dir
   SYSTEM.md, USER.md, STYLE.md, WORKFLOW.md, TOOLS.md, MEMORY.md, BOOTSTRAP.md, sync-policy.md
   memory/daily/  memory/projects/
   templates/weekly-report.md  templates/jd-optimize.md  templates/meeting-summary.md
-  runtime/inbox.md  runtime/last-session.md
+  runtime/inbox.md  runtime/last-session.md  runtime/active-task.md
+  runtime/interrupted-tasks.md  runtime/resume-protocol.md  runtime/resume-checkpoint-template.md
 
 写入规则：
 - SYSTEM.md：写入项目级规则（优先读 .assistant/、不存敏感信息、不确定标记 Pending confirmation、信息分层存储）
@@ -448,6 +478,10 @@ Outside `.assistant/`, create a local `PROGRESS.md` inside the active module dir
 - sync-policy.md：写入默认同步策略模板 `sync_default: ask`
 - 三个模板文件：各写一个简洁的默认结构即可
 - runtime 文件：各写一个最小模板
+- `active-task.md`：记录当前最高优先级主任务，包含 task / status / last completed step / next step / blocking decision
+- `interrupted-tasks.md`：按优先级记录其他中断任务，包含 paused at / task / status / next step
+- `resume-protocol.md`：写入快速回想硬规则，要求首条恢复回复采用 A/B/C 三段式
+- `resume-checkpoint-template.md`：提供命名断点模板，字段至少包含 task / paused at / priority / status / last completed step / next step / blocking decision
 - 创建今天的 daily 文件：memory/daily/YYYY-MM-DD.md
 - 多步任务：在相关模块目录维护简短 `PROGRESS.md`，用于断点恢复，不要写成长日志
 - 默认使用通用模板：`任务进度 / 已完成 / 进行中 / 待做 / 关键决策 / 已知问题 / 关键文件或素材`
